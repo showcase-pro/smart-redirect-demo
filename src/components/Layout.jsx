@@ -2,7 +2,6 @@ import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
-  Link as LinkIcon, 
   BarChart3, 
   TestTube, 
   LogOut, 
@@ -34,28 +33,22 @@ const Layout = ({ children }) => {
       description: 'Overview & Statistics'
     },
     {
-      name: 'Links',
-      path: '/links',
-      icon: LinkIcon,
-      description: 'Manage Redirect Links'
-    },
-    {
       name: 'Analytics',
       path: '/analytics',
       icon: BarChart3,
       description: 'Detailed Analytics'
     },
     {
+      name: 'Redirect Rules',
+      path: '/countries',
+      icon: Globe,
+      description: 'Manage Country & IP Redirects'
+    },
+    {
       name: 'Test Center',
       path: '/test',
       icon: TestTube,
       description: 'Test Redirects & IPs'
-    },
-    {
-      name: 'Countries',
-      path: '/countries',
-      icon: Globe,
-      description: 'Manage Country Redirects'
     }
   ];
 

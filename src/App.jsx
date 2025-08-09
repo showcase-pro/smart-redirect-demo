@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Toaster } from 'react-hot-toast';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
-import LinksManagement from './components/LinksManagement';
 import Analytics from './components/Analytics';
 import TestCenter from './components/TestCenter';
 import CountryManagement from './components/CountryManagement';
@@ -49,17 +48,6 @@ function App() {
               <ProtectedRoute>
                 <Layout>
                   <Dashboard />
-                </Layout>
-              </ProtectedRoute>
-            }
-          />
-          
-          <Route
-            path="/links"
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <LinksManagement />
                 </Layout>
               </ProtectedRoute>
             }
