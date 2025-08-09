@@ -466,7 +466,15 @@ const TestCenter = () => {
 
                 <div className="p-3 bg-gray-50 rounded-lg">
                   <div className="text-sm font-medium text-gray-900 mb-1">Final URL:</div>
-                  <div className="text-sm text-blue-600 break-all">{testResult.targetUrl}</div>
+                  <a 
+                    href={testResult.targetUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-blue-600 hover:text-blue-800 underline break-all inline-flex items-center gap-1"
+                  >
+                    {testResult.targetUrl}
+                    <ExternalLink className="w-3 h-3 flex-shrink-0" />
+                  </a>
                 </div>
 
                 {testResult.browserDetection && (
