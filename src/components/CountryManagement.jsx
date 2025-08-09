@@ -14,6 +14,10 @@ const CountryManagement = () => {
     targetUrl: '', 
     name: '' 
   });
+  const [lastInputs, setLastInputs] = useState({
+    targetUrl: '',
+    name: ''
+  });
 
   useEffect(() => {
     fetchRules();
@@ -35,6 +39,7 @@ const CountryManagement = () => {
 
   const handleAddRule = async () => {
     const { type, countryCode, ipRange, targetUrl, name } = newRule;
+    const upperCountryCode = countryCode.toUpperCase();
     
     if (!targetUrl) {
       toast.error('Target URL is required');
@@ -51,15 +56,53 @@ const CountryManagement = () => {
       return;
     }
 
+    // Check for duplicate country code
+    if (type === 'country') {
+      const existingCountryRule = rules.find(rule => 
+        rule.countryCodes.includes(upperCountryCode)
+      );
+      if (existingCountryRule) {
+        toast.error(`Country ${upperCountryCode} already has a redirect rule`);
+        return;
+      }
+    }
+
     try {
-      await countriesAPI.addRule(type, countryCode.toUpperCase(), ipRange, targetUrl, name);
+      await countriesAPI.addRule(type, upperCountryCode, ipRange, targetUrl, name);
       toast.success('Rule added successfully');
+      
+      // Save current inputs for next time
+      setLastInputs({
+        targetUrl: targetUrl,
+        name: name
+      });
+      
       fetchRules();
       setShowAddForm(false);
       setNewRule({ type: 'country', countryCode: '', ipRange: '', targetUrl: '', name: '' });
     } catch (error) {
       toast.error('Failed to add rule');
     }
+  };
+
+  const handleShowAddForm = () => {
+    setShowAddForm(true);
+    // Pre-fill with last used values
+    setNewRule(prev => ({
+      ...prev,
+      targetUrl: lastInputs.targetUrl,
+      name: lastInputs.name
+    }));
+  };
+
+  const getExistingCountries = () => {
+    const countries = new Set();
+    rules.forEach(rule => {
+      if (rule.countryCodes && rule.countryCodes.length > 0) {
+        rule.countryCodes.forEach(code => countries.add(code));
+      }
+    });
+    return Array.from(countries);
   };
 
   const handleDeleteRule = async (ruleId, displayName) => {
@@ -94,7 +137,7 @@ const CountryManagement = () => {
           <p className="text-gray-600 mt-1">Configure redirect rules by country or IP range</p>
         </div>
         <button
-          onClick={() => setShowAddForm(true)}
+          onClick={handleShowAddForm}
           className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
         >
           <Plus className="h-4 w-4" />
