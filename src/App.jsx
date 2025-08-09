@@ -6,6 +6,7 @@ import Dashboard from './components/Dashboard';
 import LinksManagement from './components/LinksManagement';
 import Analytics from './components/Analytics';
 import TestCenter from './components/TestCenter';
+import CountryManagement from './components/CountryManagement';
 import RedirectResult from './components/RedirectResult';
 import Layout from './components/Layout';
 import { authAPI } from './utils/api';
@@ -81,6 +82,17 @@ function App() {
               <ProtectedRoute>
                 <Layout>
                   <TestCenter />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          
+          <Route
+            path="/countries"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <CountryManagement />
                 </Layout>
               </ProtectedRoute>
             }

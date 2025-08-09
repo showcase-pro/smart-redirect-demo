@@ -8,7 +8,8 @@ import {
   LogOut, 
   Shield,
   Menu,
-  X
+  X,
+  Globe
 } from 'lucide-react';
 import { useState } from 'react';
 import { authAPI } from '../utils/api';
@@ -49,6 +50,12 @@ const Layout = ({ children }) => {
       path: '/test',
       icon: TestTube,
       description: 'Test Redirects & IPs'
+    },
+    {
+      name: 'Countries',
+      path: '/countries',
+      icon: Globe,
+      description: 'Manage Country Redirects'
     }
   ];
 

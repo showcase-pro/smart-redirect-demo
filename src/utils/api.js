@@ -84,4 +84,11 @@ export const healthAPI = {
   check: () => api.get('/health')
 };
 
+// Redirect Rules Management API
+export const countriesAPI = {
+  getConfig: () => api.get('/countries/config'),
+  addRule: (type, countryCode, ipRange, targetUrl, name) => api.post('/countries/config', { type, countryCode, ipRange, targetUrl, name }),
+  deleteRule: (ruleId) => api.delete(`/countries/config/${ruleId}`)
+};
+
 export default api;
