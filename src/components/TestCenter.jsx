@@ -343,7 +343,10 @@ const TestCenter = () => {
                 
                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <span className="text-sm font-medium">Country</span>
-                  <span className="text-sm text-gray-600">{testResult.ipAnalysis?.country_code || 'N/A'}</span>
+                  <span className="text-sm text-gray-600">
+                    {testResult.ipAnalysis?.country_code || testResult.ipAnalysis?.country || 'N/A'}
+                    {testResult.ipAnalysis?.country_name && ` - ${testResult.ipAnalysis.country_name}`}
+                  </span>
                 </div>
                 
                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
@@ -358,6 +361,23 @@ const TestCenter = () => {
                     {testResult.ipAnalysis?.risk_score || 0}%
                   </span>
                 </div>
+
+                {testResult.ipAnalysis?.region && (
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span className="text-sm font-medium">Location</span>
+                    <span className="text-sm text-gray-600">
+                      {testResult.ipAnalysis.city && `${testResult.ipAnalysis.city}, `}
+                      {testResult.ipAnalysis.region}
+                    </span>
+                  </div>
+                )}
+
+                {testResult.ipAnalysis?.isp && (
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span className="text-sm font-medium">ISP</span>
+                    <span className="text-sm text-gray-600">{testResult.ipAnalysis.isp}</span>
+                  </div>
+                )}
 
                 <div className="grid grid-cols-2 gap-2">
                   <div className={`p-2 rounded-lg text-center ${
