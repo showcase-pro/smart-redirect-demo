@@ -1,0 +1,19 @@
+{
+  "name": "Smart Redirect Admin",
+  "short_name": "Redirect Admin",
+  "description": "Smart Redirect Admin Dashboard - Manage geo-based redirects and IP rules",
+  "theme_color": "#3B82F6",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "/redirect-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
