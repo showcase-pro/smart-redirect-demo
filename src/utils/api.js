@@ -75,8 +75,8 @@ export const analyticsAPI = {
 
 // Test API
 export const testAPI = {
-  testRedirect: (shortCode, testData) => 
-    api.post(`/test-redirect/${shortCode}`, testData)
+  testIP: (testData) => 
+    api.post('/test-ip', testData)
 };
 
 // Health API

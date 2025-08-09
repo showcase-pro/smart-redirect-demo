@@ -12,12 +12,11 @@ import {
   Monitor,
   Info
 } from 'lucide-react';
-import { testAPI, linksAPI } from '../utils/api';
+import { testAPI } from '../utils/api';
 import { toast } from 'react-hot-toast';
 
 const TestCenter = () => {
-  const [links, setLinks] = useState([]);
-  const [selectedLink, setSelectedLink] = useState('');
+  // Removed links state as we don't need them anymore
   const [testIP, setTestIP] = useState('');
   const [userAgent, setUserAgent] = useState('');
   const [testResult, setTestResult] = useState(null);
@@ -123,28 +122,11 @@ const TestCenter = () => {
     }
   ];
 
-  useEffect(() => {
-    fetchLinks();
-  }, []);
-
-  const fetchLinks = async () => {
-    try {
-      const response = await linksAPI.getAll();
-      if (response.data.success) {
-        setLinks(response.data.data);
-        if (response.data.data.length > 0) {
-          setSelectedLink(response.data.data[0].shortCode);
-        }
-      }
-    } catch (error) {
-      console.error('Failed to fetch links:', error);
-      toast.error('Failed to load links');
-    }
-  };
+  // Removed links fetching as we test IP directly
 
   const runTest = async () => {
-    if (!selectedLink || !testIP) {
-      toast.error('Please select a link and test IP');
+    if (!testIP) {
+      toast.error('Please enter a test IP address');
       return;
     }
 
@@ -152,7 +134,7 @@ const TestCenter = () => {
     setTestResult(null);
 
     try {
-      const response = await testAPI.testRedirect(selectedLink, {
+      const response = await testAPI.testIP({
         testIP,
         userAgent: userAgent || undefined
       });
@@ -176,10 +158,7 @@ const TestCenter = () => {
     toast.success('Copied to clipboard');
   };
 
-  const generateTestURL = () => {
-    if (!selectedLink) return '';
-    return `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5005'}/${selectedLink}`;
-  };
+  // Removed generateTestURL as we don't use links anymore
 
   return (
     <div className="space-y-6">
@@ -199,38 +178,6 @@ const TestCenter = () => {
           </h3>
 
           <div className="space-y-4">
-            {/* Link Selection */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Select Link to Test
-              </label>
-              <select
-                value={selectedLink}
-                onChange={(e) => setSelectedLink(e.target.value)}
-                className="input"
-              >
-                <option value="">Choose a link...</option>
-                {links.map((link) => (
-                  <option key={link.shortCode} value={link.shortCode}>
-                    {link.shortCode} - {link.name}
-                  </option>
-                ))}
-              </select>
-              
-              {selectedLink && (
-                <div className="mt-2 p-2 bg-blue-50 rounded-lg flex items-center justify-between">
-                  <span className="text-sm text-blue-700 font-mono">
-                    {generateTestURL()}
-                  </span>
-                  <button
-                    onClick={() => copyToClipboard(generateTestURL())}
-                    className="text-blue-600 hover:text-blue-700 p-1"
-                  >
-                    <Copy className="w-4 h-4" />
-                  </button>
-                </div>
-              )}
-            </div>
 
             {/* IP Input */}
             <div>
@@ -263,7 +210,7 @@ const TestCenter = () => {
             {/* Test Button */}
             <button
               onClick={runTest}
-              disabled={!selectedLink || !testIP || isLoading}
+              disabled={!testIP || isLoading}
               className="btn-primary w-full flex items-center justify-center"
             >
               {isLoading ? (
@@ -391,65 +338,65 @@ const TestCenter = () => {
               <div className="space-y-3">
                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <span className="text-sm font-medium">IP Address</span>
-                  <span className="text-sm text-gray-600">{testResult.ipAnalysis.ip}</span>
+                  <span className="text-sm text-gray-600">{testResult.ipAnalysis?.ip || 'N/A'}</span>
                 </div>
                 
                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <span className="text-sm font-medium">Country</span>
-                  <span className="text-sm text-gray-600">{testResult.ipAnalysis.country_code}</span>
+                  <span className="text-sm text-gray-600">{testResult.ipAnalysis?.country_code || 'N/A'}</span>
                 </div>
                 
                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <span className="text-sm font-medium">Risk Score</span>
                   <span className={`text-sm font-medium px-2 py-1 rounded-full ${
-                    testResult.ipAnalysis.risk_score > 70 
+                    (testResult.ipAnalysis?.risk_score || 0) > 70 
                       ? 'bg-red-100 text-red-700'
-                      : testResult.ipAnalysis.risk_score > 30
+                      : (testResult.ipAnalysis?.risk_score || 0) > 30
                       ? 'bg-yellow-100 text-yellow-700'
                       : 'bg-green-100 text-green-700'
                   }`}>
-                    {testResult.ipAnalysis.risk_score}%
+                    {testResult.ipAnalysis?.risk_score || 0}%
                   </span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2">
                   <div className={`p-2 rounded-lg text-center ${
-                    testResult.ipAnalysis.is_vpn ? 'bg-red-100' : 'bg-green-100'
+                    testResult.ipAnalysis?.is_vpn ? 'bg-red-100' : 'bg-green-100'
                   }`}>
                     <div className={`text-xs font-medium ${
-                      testResult.ipAnalysis.is_vpn ? 'text-red-700' : 'text-green-700'
+                      testResult.ipAnalysis?.is_vpn ? 'text-red-700' : 'text-green-700'
                     }`}>
-                      VPN: {testResult.ipAnalysis.is_vpn ? 'Yes' : 'No'}
+                      VPN: {testResult.ipAnalysis?.is_vpn ? 'Yes' : 'No'}
                     </div>
                   </div>
                   
                   <div className={`p-2 rounded-lg text-center ${
-                    testResult.ipAnalysis.is_proxy ? 'bg-red-100' : 'bg-green-100'
+                    testResult.ipAnalysis?.is_proxy ? 'bg-red-100' : 'bg-green-100'
                   }`}>
                     <div className={`text-xs font-medium ${
-                      testResult.ipAnalysis.is_proxy ? 'text-red-700' : 'text-green-700'
+                      testResult.ipAnalysis?.is_proxy ? 'text-red-700' : 'text-green-700'
                     }`}>
-                      Proxy: {testResult.ipAnalysis.is_proxy ? 'Yes' : 'No'}
+                      Proxy: {testResult.ipAnalysis?.is_proxy ? 'Yes' : 'No'}
                     </div>
                   </div>
                   
                   <div className={`p-2 rounded-lg text-center ${
-                    testResult.ipAnalysis.is_tor ? 'bg-red-100' : 'bg-green-100'
+                    testResult.ipAnalysis?.is_tor ? 'bg-red-100' : 'bg-green-100'
                   }`}>
                     <div className={`text-xs font-medium ${
-                      testResult.ipAnalysis.is_tor ? 'text-red-700' : 'text-green-700'
+                      testResult.ipAnalysis?.is_tor ? 'text-red-700' : 'text-green-700'
                     }`}>
-                      Tor: {testResult.ipAnalysis.is_tor ? 'Yes' : 'No'}
+                      Tor: {testResult.ipAnalysis?.is_tor ? 'Yes' : 'No'}
                     </div>
                   </div>
                   
                   <div className={`p-2 rounded-lg text-center ${
-                    testResult.ipAnalysis.is_mobile ? 'bg-blue-100' : 'bg-gray-100'
+                    testResult.ipAnalysis?.is_mobile ? 'bg-blue-100' : 'bg-gray-100'
                   }`}>
                     <div className={`text-xs font-medium ${
-                      testResult.ipAnalysis.is_mobile ? 'text-blue-700' : 'text-gray-700'
+                      testResult.ipAnalysis?.is_mobile ? 'text-blue-700' : 'text-gray-700'
                     }`}>
-                      Mobile: {testResult.ipAnalysis.is_mobile ? 'Yes' : 'No'}
+                      Mobile: {testResult.ipAnalysis?.is_mobile ? 'Yes' : 'No'}
                     </div>
                   </div>
                 </div>
@@ -463,14 +410,14 @@ const TestCenter = () => {
               <div className="space-y-3">
                 <div className={`p-4 rounded-lg border-l-4 ${
                   testResult.wouldRedirect 
-                    ? testResult.filterDecision.action === 'allow'
+                    ? testResult.filterDecision?.action === 'allow'
                       ? 'bg-green-50 border-green-400'
                       : 'bg-yellow-50 border-yellow-400'
                     : 'bg-red-50 border-red-400'
                 }`}>
                   <div className="flex items-center">
                     {testResult.wouldRedirect ? (
-                      testResult.filterDecision.action === 'allow' ? (
+                      testResult.filterDecision?.action === 'allow' ? (
                         <CheckCircle className="w-5 h-5 text-green-500 mr-2" />
                       ) : (
                         <ExternalLink className="w-5 h-5 text-yellow-500 mr-2" />
@@ -479,20 +426,20 @@ const TestCenter = () => {
                       <AlertTriangle className="w-5 h-5 text-red-500 mr-2" />
                     )}
                     <span className="font-medium">
-                      Action: {testResult.filterDecision.action.toUpperCase()}
+                      Action: {testResult.filterDecision?.action?.toUpperCase() || 'N/A'}
                     </span>
                   </div>
                   <p className="text-sm text-gray-600 mt-1">
-                    Reason: {testResult.filterDecision.reason}
+                    Reason: {testResult.filterDecision?.reason || 'N/A'}
                   </p>
                 </div>
 
                 {testResult.appliedRule && (
                   <div className="p-3 bg-blue-50 rounded-lg">
                     <div className="font-medium text-blue-900 mb-1">Applied Rule:</div>
-                    <div className="text-sm text-blue-700">{testResult.appliedRule.name}</div>
+                    <div className="text-sm text-blue-700">{testResult.appliedRule?.name || 'Default Rule'}</div>
                     <div className="text-xs text-blue-600 mt-1">
-                      Countries: {testResult.appliedRule.countryCodes.join(', ')}
+                      Countries: {testResult.appliedRule?.countryCodes?.join(', ') || 'N/A'}
                     </div>
                   </div>
                 )}
@@ -506,11 +453,11 @@ const TestCenter = () => {
                   <div className="p-3 bg-purple-50 rounded-lg">
                     <div className="text-sm font-medium text-purple-900 mb-1">Browser Detection:</div>
                     <div className="text-sm text-purple-700">
-                      In-App Browser: {testResult.browserDetection.isInApp ? 'Yes' : 'No'}
-                      {testResult.browserDetection.app && ` (${testResult.browserDetection.app})`}
+                      In-App Browser: {testResult.browserDetection?.isInApp ? 'Yes' : 'No'}
+                      {testResult.browserDetection?.app && ` (${testResult.browserDetection.app})`}
                     </div>
                     <div className="text-xs text-purple-600 mt-1">
-                      Confidence: {testResult.browserDetection.confidence}
+                      Confidence: {testResult.browserDetection?.confidence || 'N/A'}
                     </div>
                   </div>
                 )}
@@ -527,10 +474,9 @@ const TestCenter = () => {
           <div>
             <h3 className="font-medium text-blue-900 mb-1">How to Use the Test Center</h3>
             <div className="text-sm text-blue-700 space-y-1">
-              <p>1. <strong>Select a Link:</strong> Choose from the configured redirect links</p>
-              <p>2. <strong>Choose Test IP:</strong> Select from demo IPs or enter your own</p>
-              <p>3. <strong>Optional User Agent:</strong> Test in-app browser detection</p>
-              <p>4. <strong>Run Test:</strong> See the complete redirect decision process</p>
+              <p>1. <strong>Enter Test IP:</strong> Select from demo IPs or enter your own</p>
+              <p>2. <strong>Optional User Agent:</strong> Test in-app browser detection</p>
+              <p>3. <strong>Run Test:</strong> See the complete IP analysis and redirect decision</p>
             </div>
             <div className="mt-3 p-2 bg-blue-100 rounded text-xs text-blue-800">
               <strong>Note:</strong> This test simulates the redirect process without actually performing the redirect.
